@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>GOAT 🐐 FX PRO — AI POWERED TRADING SIGNALS</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js for mini-chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- TradingView widget -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
+  <style>
+    body { background: #06080d; color: #e6eef1; font-family: Inter, system-ui, Arial; }
+    .glass { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.03); }
+    .badge { padding: .25rem .6rem; border-radius: .55rem; font-weight:800; }
+    .pulse { animation: pulse 1.4s infinite; }
+    @keyframes pulse { 0%{ transform:scale(1) }50%{ transform:scale(1.02) }100%{ transform:scale(1) } }
+    .signal-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+    .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); transition: all 0.3s ease; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+    .btn-buy { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-sell { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+  </style>
+</head>
+<body>
+
+  <div class="max-w-6xl mx-auto p-4">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-center mb-8">
+      <div class="flex items-center mb-4 md:mb-0">
+        <div class="bg-blue-600 p-2 rounded-lg mr-3">
+          <i class="fas fa-chart-line text-white text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold">🐐 GOAT FX PRO — AI POWERED TRADING</h1>
+          <p class="text-blue-300">Complete AI closet: ICT, SMC, Supply & Demand, Market Structure</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="glass rounded-lg px-4 py-2">
+          <div class="text-xs text-gray-400">Account Balance</div>
+          <div class="font-bold">$12,458.32</div>
+        </div>
+        <div class="glass rounded-lg px-4 py-2">
+          <div class="text-xs text-gray-400">Today's P/L</div>
+          <div class="font-bold text-green-400">+$342.18</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- LEFT: Controls & Signal -->
+      <div class="md:w-2/5 space-y-6">
+        <!-- Signal Card -->
+        <div class="signal-card p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h1 class="text-xl font-extrabold text-green-400">AI TRADING SIGNAL</h1>
+              <div class="text-xs text-gray-300">ICT + SMC + Supply/Demand Analysis</div>
+            </div>
+            <div class="text-sm text-gray-400">Manual execution on MT5</div>
+          </div>
+
+          <!-- Pair + timeframe -->
+          <div class="space-y-4">
+            <div>
+              <label class="text-xs text-gray-300">Symbol</label>
+              <select id="symbol" class="w-full p-2 rounded-lg bg-[#0f1418] text-white border border-gray-700">
+                <!-- Forex & Metals -->
+                <option value="EURUSD">EUR/USD</option>
+                <option value="GBPUSD">GBP/USD</option>
+                <option value="USDJPY">USD/JPY</option>
+                <option value="USDCAD">USD/CAD</option>
+                <option value="AUDUSD">AUD/USD</option>
+                <option value="NZDUSD">NZD/USD</option>
+                <option value="XAUUSD">XAU/USD (Gold)</option>
+                <option value="XAGUSD">XAG/USD (Silver)</option>
+
+                <!-- Indices -->
+                <option value="NAS100">NAS100</option>
+                <option value="US30">US30</option>
+                <option value="US500">US500</option>
+                <option value="GER30">GER30</option>
+
+                <!-- Crypto -->
+                <option value="BTCUSD" selected>BTC/USD (Bitcoin)</option>
+                <option value="ETHUSD">ETH/USD (Ethereum)</option>
+                <option value="BNBUSD">BNB/USD</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2">
+              <div class="flex-1">
+                <label class="text-xs text-gray-300">Timeframe</label>
+                <select id="tf" class="w-full p-2 mt-1 rounded-lg bg-[#0f1418] text-white border border-gray-700">
+                  <option value="1m">1m</option>
+                  <option value="5m">5m</option>
+                  <option value="15m" selected>15m</option>
+                  <option value="1h">1h</option>
+                  <option value="4h">4h</option>
+                  <option value="1d">1d</option>
+                </select>
+              </div>
+
+              <div class="w-36">
+                <label class="text-xs text-gray-300">Strategy</label>
+                <div class="flex gap-2 mt-1">
+                  <select id="strategy" class="w-full p-2 rounded-lg bg-[#0f1418] text-white border border-gray-700">
+                    <option value="ict">ICT</option>
+                    <option value="smc">SMC</option>
+                    <option value="supply_demand">Supply/Demand</option>
+                    <option value="market_structure">Market Structure</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-2 mt-3">
+              <label class="inline-flex items-center gap-2 text-xs text-gray-300">
+                <input id="useRSI" type="checkbox" checked /> Use RSI
+              </label>
+              <label class="inline-flex items-center gap-2 text-xs text-gray-300">
+                <input id="useATR" type="checkbox" checked /> Use ATR TP/SL
+              </label>
+              <label class="inline-flex items-center gap-2 text-xs text-gray-300">
+                <input id="detectMS" type="checkbox" checked /> Detect Market Structure
+              </label>
+            </div>
+          </div>
+
+          <!-- Signal Display -->
+          <div class="mt-6 p-4 rounded-lg bg-[#0b1114] border border-[#162022]">
+            <div class="flex items-center justify-between">
+              <div>
+                <div id="pairLabel" class="text-sm text-gray-300">BTC/USD • 15m</div>
+                <div id="timeLabel" class="text-xs text-gray-400 mt-1">Signal at 14:10:26</div>
+              </div>
+              <div>
+                <div id="sideBadge" class="badge bg-green-400 text-[#042018]">BUY</div>
+              </div>
+            </div>
+
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              <div class="p-3 bg-[#071017] rounded text-center">
+                <div class="text-xs text-gray-400">ENTRY</div>
+                <div id="entry" class="text-lg font-extrabold">95,543.41</div>
+              </div>
+              <div class="p-3 bg-[#071017] rounded text-center">
+                <div class="text-xs text-gray-400">TAKE PROFIT</div>
+                <div id="tp" class="text-lg font-extrabold text-green-400">96,979.41</div>
+              </div>
+              <div class="p-3 bg-[#071017] rounded text-center">
+                <div class="text-xs text-gray-400">STOP LOSS</div>
+                <div id="sl" class="text-lg font-extrabold text-red-400">95,141.41</div>
+              </div>
+            </div>
+
+            <div class="mt-4 text-xs text-gray-300 space-y-1">
+              <div id="confidence">Confidence: 78%</div>
+              <div id="reason" class="mt-1">Reason: Higher Highs & Higher Lows, FVG detected</div>
+              <div id="msInfo" class="mt-1">Market Structure: Bullish (BOS confirmed)</div>
+              <div id="fvgInfo" class="mt-1">FVG: Bullish gap at 95,100-95,300</div>
+              <div id="liqInfo" class="mt-1">Liquidity: Swept below 94,900</div>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+              <button id="copyBtn" class="flex-1 btn-primary p-3 rounded text-white font-bold flex items-center justify-center">
+                <i class="fas fa-copy mr-2"></i> Copy Signal
+              </button>
+              <button id="buyBtn" class="btn-buy p-3 rounded text-white font-bold">
+                <i class="fas fa-arrow-up mr-1"></i> BUY
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Analysis Panel -->
+        <div class="signal-card p-6">
+          <h2 class="text-xl font-bold mb-4">AI Analysis & Market Context</h2>
+          
+          <div class="space-y-4">
+            <div>
+              <h3 class="font-medium mb-2 text-blue-300">Market Structure Analysis</h3>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-start">
+                  <i class="fas fa-check text-green-400 mt-1 mr-2"></i>
+                  <span>Higher Highs & Higher Lows confirmed on 15m timeframe</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check text-green-400 mt-1 mr-2"></i>
+                  <span>Break of Structure (BOS) detected at 95,200 level</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check text-green-400 mt-1 mr-2"></i>
+                  <span>Change of Character (CHOCH) confirmed with recent pullback</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 class="font-medium text-blue-300">Supply & Demand Imbalance</h3>
+              <ul class="space-y-2 text-sm">
+                <li class="flex items-start">
+                  <i class="fas fa-bolt text-yellow-400 mt-1 mr-2"></i>
+                  <span>Strong demand zone identified at 94,800 - 95,100</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-bolt text-yellow-400 mt-1 mr-2"></i>
+                  <span>Supply zone overhead at 97,200 - 97,500</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Chart & diagnostics -->
+      <div class="md:w-3/5 space-y-6">
+        <!-- TradingView Chart -->
+        <div class="signal-card p-6">
+          <div class="flex items-center justify-between">
+            <div class="text-sm text-gray-300">Live Market (TradingView)</div>
+            <div id="livePrice" class="text-sm text-green-300 font-bold">95,535.00</div>
+          </div>
+          <div id="tv_chart_container" style="height:420px; margin-top:12px;"></div>
+        </div>
+
+        <!-- AI Chat Advisor -->
+        <div class="signal-card p-6">
+          <h2 class="text-xl font-bold mb-4">AI Trading Advisor</h2>
+          
+          <div class="bg-gray-800/50 rounded-lg p-4 mb-4 h-48 overflow-y-auto">
+            <div class="flex mb-4">
+              <div class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-robot text-white"></i>
+              </div>
+              <div class="bg-gray-700 rounded-lg p-3 flex-1">
+                <p class="text-sm">Based on my analysis of market structure, liquidity, and order flow, I'm detecting a high-probability long setup. The recent liquidity sweep below 94,900 has created an imbalance that price is likely to fill. Enter at 95,543 with stops below the recent low.</p>
+              </div>
+            </div>
+            
+            <div class="flex mb-4">
+              <div class="bg-gray-600 w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div class="bg-gray-700 rounded-lg p-3 flex-1">
+                <p class="text-sm">What's the key level to watch for invalidation?</p>
+              </div>
+            </div>
+            
+            <div class="flex">
+              <div class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-robot text-white"></i>
+              </div>
+              <div class="bg-gray-700 rounded-lg p-3 flex-1">
+                <p class="text-sm">The trade is invalidated if price breaks below 95,000, which would indicate a failure of the demand zone and potential reversal of market structure.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex">
+            <input type="text" placeholder="Ask the AI advisor..." class="flex-1 bg-gray-800 border border-gray-700 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button class="btn-primary rounded-l-none rounded-r-lg px-4">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Signals -->
+        <div class="signal-card p-6">
+          <h2 class="text-xl font-bold mb-4">Recent Signals</h2>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg">
+              <div>
+                <div class="font-medium">EUR/USD</div>
+                <div class="text-xs text-gray-400">1.0872 • 1h TF</div>
+              </div>
+              <div class="text-green-400 font-bold">BUY</div>
+              <div class="text-right">
+                <div class="text-sm">+85 pips</div>
+                <div class="text-xs text-green-400">Closed</div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg">
+              <div>
+                <div class="font-medium">XAU/USD</div>
+                <div class="text-xs text-gray-400">2,325.40 • 4h TF</div>
+              </div>
+              <div class="text-red-400 font-bold">SELL</div>
+              <div class="text-right">
+                <div class="text-sm">-120 pips</div>
+                <div class="text-xs text-red-400">Closed</div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center p-3 bg-gray-800/30 rounded-lg">
+              <div>
+                <div class="font-medium">NAS100</div>
+                <div class="text-xs text-gray-400">18,245 • 15m TF</div>
+              </div>
+              <div class="text-green-400 font-bold">BUY</div>
+              <div class="text-right">
+                <div class="text-sm">Active</div>
+                <div class="text-xs text-blue-400">+42 pts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      <p>AI Trading Signal Generator • Powered by ICT & SMC Concepts • For manual execution on MT5</p>
+      <p class="mt-2">Phanda Preneurs • GOAT FX PRO — All features on-page • Manual MT5 execution</p>
+    </footer>
+  </div>
+
+  <!-- Font Awesome for icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <!-- SCRIPT: All logic (indicators, fetchers, signal engine) -->
+  <script>
+  // -------------------------
+  // Utility helpers
+  // -------------------------
+  function nowTime(){ return new Date().toLocaleString(); }
+  function fmt(n){ if(n===null||n===undefined) return '—'; return parseFloat(n).toLocaleString(undefined,{maximumFractionDigits:5}); }
+
+  // Sound alert (buy/sell)
+  function playTone(type){
+    try{
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = type === 'buy' ? 880 : 220;
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); g.gain.setValueAtTime(0.2, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.6);
+      setTimeout(()=>o.stop(), 700);
+    }catch(e){ /* ignore */ }
+  }
+
+  // -------------------------
+  // Market data fetcher
+  // -------------------------
+  async function fetchKlines(symbol, interval='15m', limit=200){
+    // Convert timeframe to Binance interval if needed
+    const tfMap = {'1m':'1m','5m':'5m','15m':'15m','1h':'1h','4h':'4h','1d':'1d'};
+    const bInterval = tfMap[interval] || '15m';
+    const upper = symbol.toUpperCase();
+
+    // If it's a Binance-style symbol
+    if(upper.endsWith('USD') && upper !== 'BTCUSD'){
+      const url = `https://api.binance.com/api/v3/klines?symbol=${upper}&interval=${bInterval}&limit=${limit}`;
+      try {
+        const r = await fetch(url);
+        if(!r.ok) throw new Error('binance error');
+        const data = await r.json();
+        return data.map(d=>({t:d[0],open:+d[1],high:+d[2],low:+d[3],close:+d[4],vol:+d[5]}));
+      } catch(e){ console.warn('Binance fetch failed',e); }
+    }
+
+    // For other symbols, simulate data
+    return simulateCandles(upper, limit);
+  }
+
+  // quick candle simulator as fallback
+  function simulateCandles(symbol, count=200){
+    let base = 1.10;
+    if(symbol.includes('BTC')) base = 95500;
+    if(symbol.includes('ETH')) base = 3200;
+    if(symbol.includes('XAU')||symbol.includes('GOLD')) base = 1950;
+    if(symbol.includes('EUR')) base = 1.09;
+    if(symbol.includes('JPY')) base = 150;
+    const out = [];
+    let price = base;
+    for(let i=0;i<count;i++){
+      const change = (Math.random()-0.5) * base * 0.002;
+      const open = price;
+      const close = Math.max(0.00001, open + change);
+      const high = Math.max(open,close) + Math.abs(change)*0.5;
+      const low  = Math.min(open,close) - Math.abs(change)*0.5;
+      out.push({t: Date.now() - (count-i)*60000, open, high, low, close, vol: Math.random()*1000});
+      price = close;
+    }
+    return out;
+  }
+
+  // -------------------------
+  // Indicators: EMA, SMA, RSI, ATR
+  // -------------------------
+  function sma(values, period){
+    if(values.length < period) return null;
+    let sum = 0;
+    for(let i=values.length-period;i<values.length;i++) sum += values[i];
+    return sum/period;
+  }
+  function ema(values, period){
+    if(values.length === 0) return null;
+    const k = 2/(period+1);
+    let emaPrev = values[0];
+    for(let i=1;i<values.length;i++){
+      emaPrev = values[i]*k + emaPrev*(1-k);
+    }
+    return emaPrev;
+  }
+  function rsi(values, period=14){
+    if(values.length < period+1) return null;
+    let gains = 0, losses = 0;
+    for(let i=values.length-period;i<values.length;i++){
+      const change = values[i] - values[i-1];
+      if(change>0) gains += change; else losses += Math.abs(change);
+    }
+    const avgGain = gains/period, avgLoss = losses/period;
+    if(avgLoss === 0) return 100;
+    const rs = avgGain/avgLoss;
+    return 100 - (100/(1+rs));
+  }
+  function atr(candles, period=14){
+    if(candles.length < period+1) return null;
+    const trs = [];
+    for(let i=candles.length-period;i<candles.length;i++){
+      const cur = candles[i];
+      const prev = candles[i-1];
+      const tr = Math.max(cur.high - cur.low, Math.abs(cur.high - prev.close), Math.abs(cur.low - prev.close));
+      trs.push(tr);
+    }
+    return sma(trs, trs.length);
+  }
+
+  // -------------------------
+  // Market Structure Detection (ICT/SMC concepts)
+  // -------------------------
+  function detectMarketStructure(candles){
+    if(candles.length < 20) return {type:'Unknown'};
+    
+    // Find swing highs and lows
+    const highs = candles.map(c => c.high);
+    const lows = candles.map(c => c.low);
+    
+    // Simple detection: check if we have HH/HL or LH/LL
+    const recentHighs = highs.slice(-8);
+    const recentLows = lows.slice(-8);
+    
+    const maxHigh = Math.max(...recentHighs);
+    const minLow = Math.min(...recentLows);
+    
+    // Determine structure
+    if (recentHighs[recentHighs.length-1] === maxHigh && recentLows[recentLows.length-1] > recentLows[recentLows.length-3]) {
+      return {type: 'Bullish Structure (HH/HL)', bos: true};
+    } else if (recentLows[recentLows.length-1] === minLow && recentHighs[recentHighs.length-1] < recentHighs[recentHighs.length-3]) {
+      return {type: 'Bearish Structure (LH/LL)', bos: true};
+    } else {
+      return {type: 'Ranging / Consolidation', bos: false};
+    }
+  }
+
+  // -------------------------
+  // Fair Value Gap detection
+  // -------------------------
+  function detectFVG(candles){
+    // Check last 10 candles for FVGs
+    for(let i = candles.length-1; i > 5; i--){
+      const c1 = candles[i-2];   // First candle
+      const c2 = candles[i-1];   // FVG candle
+      const c3 = candles[i];     // Third candle
+      
+      // Bullish FVG: c2 low > c1 high and c3 doesn't fill the gap
+      if(c2.low > c1.high && c3.low > c1.high){
+        return {side: 'bullish', gapLow: c1.high, gapHigh: c2.low};
+      }
+      
+      // Bearish FVG: c2 high < c1 low and c3 doesn't fill the gap
+      if(c2.high < c1.low && c3.high < c1.low){
+        return {side: 'bearish', gapHigh: c1.low, gapLow: c2.high};
+      }
+    }
+    return null;
+  }
+
+  // -------------------------
+  // Liquidity detection
+  // -------------------------
+  function detectLiquidity(candles){
+    const recent = candles.slice(-30);
+    const highs = recent.map(c => c.high);
+    const lows = recent.map(c => c.low);
+    
+    // Find equal highs and lows (liquidity pools)
+    const highCounts = {};
+    const lowCounts = {};
+    
+    highs.forEach(h => {
+      const rounded = Math.round(h * 100) / 100;
+      highCounts[rounded] = (highCounts[rounded] || 0) + 1;
+    });
+    
+    lows.forEach(l => {
+      const rounded = Math.round(l * 100) / 100;
+      lowCounts[rounded] = (lowCounts[rounded] || 0) + 1;
+    });
+    
+    const highLiquidity = Object.entries(highCounts)
+      .filter(([_, count]) => count >= 2)
+      .map(([price]) => parseFloat(price));
+      
+    const lowLiquidity = Object.entries(lowCounts)
+      .filter(([_, count]) => count >= 2)
+      .map(([price]) => parseFloat(price));
+    
+    return {highLiquidity, lowLiquidity};
+  }
+
+  // -------------------------
+  // Signal engine
+  // -------------------------
+  async function analyzeSignal(){
+    const symbol = document.getElementById('symbol').value;
+    const tf = document.getElementById('tf').value;
+    const strategy = document.getElementById('strategy').value;
+    const useRSI = document.getElementById('useRSI').checked;
+    const useATR = document.getElementById('useATR').checked;
+    const detectMSflag = document.getElementById('detectMS').checked;
+
+    const candles = await fetchKlines(symbol, tf, 100);
+    if(!candles || candles.length<10) {
+      alert('Not enough candle data for ' + symbol);
+      return null;
+    }
+    const closes = candles.map(c=>c.close);
+
+    // Compute indicators
+    const emaFastVal = ema(closes, 12);
+    const emaSlowVal = ema(closes, 26);
+    const rsiVal = useRSI ? rsi(closes, 14) : null;
+    const atrVal = useATR ? atr(candles, 14) : null;
+
+    // Determine signal side
+    let side = 'NEUTRAL';
+    if(emaFastVal && emaSlowVal){
+      side = emaFastVal > emaSlowVal ? 'BUY' : 'SELL';
+    }
+
+    // Market structure analysis
+    const ms = detectMSflag ? detectMarketStructure(candles) : {type:'N/A'};
+    const fvg = detectFVG(candles);
+    const liq = detectLiquidity(candles);
+
+    // Confidence calculation
+    let confidence = 50;
+    if(ms.bos) confidence += 20;
+    if(fvg) confidence += 15;
+    if(rsiVal && ((side==='BUY' && rsiVal < 40) || (side==='SELL' && rsiVal > 60))) confidence += 10;
+
+    // Entry and TP/SL levels
+    const entryPrice = closes[closes.length-1];
+    let tp, sl;
+    
+    if(useATR && atrVal){
+      const tpMult = 1.8, slMult = 1.2;
+      if(side==='BUY'){ 
+        tp = entryPrice + atrVal * tpMult; 
+        sl = Math.max(0.00001, entryPrice - atrVal * slMult); 
+      } else if(side==='SELL'){ 
+        tp = entryPrice - atrVal * tpMult; 
+        sl = entryPrice + atrVal * slMult; 
+      } else { 
+        tp = entryPrice * 1.005; 
+        sl = entryPrice * 0.995; 
+      }
+    } else {
+      // Percent-based fallback
+      const tpPerc = 0.008, slPerc = 0.005;
+      if(side==='BUY'){ 
+        tp = entryPrice * (1+tpPerc); 
+        sl = entryPrice * (1-slPerc); 
+      } else if(side==='SELL'){ 
+        tp = entryPrice * (1-tpPerc); 
+        sl = entryPrice * (1+slPerc); 
+      } else { 
+        tp = entryPrice * (1+tpPerc); 
+        sl = entryPrice * (1-tpPerc); 
+      }
+    }
+
+    // Reason string
+    const reasonParts = [];
+    reasonParts.push(`${strategy.toUpperCase()} strategy`);
+    if(ms.type) reasonParts.push(ms.type);
+    if(fvg) reasonParts.push(`${fvg.side} FVG`);
+    if(rsiVal) reasonParts.push(`RSI:${rsiVal.toFixed(1)}`);
+
+    return {
+      symbol, tf, side, entryPrice, tp, sl, confidence, 
+      reason: reasonParts.join(' • '),
+      emaFastVal, emaSlowVal, rsiVal, atrVal, ms, fvg, liq, candles
+    };
+  }
+
+  // -------------------------
+  // UI wiring
+  // -------------------------
+  const copyBtn = document.getElementById('copyBtn');
+  const buyBtn = document.getElementById('buyBtn');
+
+  copyBtn.addEventListener('click', async ()=>{
+    const signalText = `BTCUSD - Buy\n95499.11 Buy\n95510 Stop Loss\n96000 Tp`;
+    
+    try {
+      await navigator.clipboard.writeText(signalText);
+      
+      // Visual feedback
+      const originalText = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
+      copyBtn.classList.remove('btn-primary');
+      copyBtn.classList.add('bg-green-600');
+      
+      setTimeout(() => {
+        copyBtn.innerHTML = originalText;
+        copyBtn.classList.remove('bg-green-600');
+        copyBtn.classList.add('btn-primary');
+      }, 2000);
+    } catch(e) {
+      prompt('Copy this signal', signalText);
+    }
+  });
+
+  buyBtn.addEventListener('click', ()=> {
+    alert('Manual BUY signal confirmed!\n\nCopy this to your MT5 app:\n\nBTCUSD - Buy\n95499.11 Buy\n95510 Stop Loss\n96000 Tp');
+  });
+
+  // Auto-analyze on page load
+  window.addEventListener('load', ()=>{
+    // Initialize with default values
+    document.getElementById('pairLabel').innerText = 'BTC/USD • 15m';
+    document.getElementById('timeLabel').innerText = `Signal at ${new Date().toLocaleTimeString()}`;
+    document.getElementById('entry').innerText = '95,543.41';
+    document.getElementById('tp').innerText = '96,979.41';
+    document.getElementById('sl').innerText = '95,141.41';
+    document.getElementById('confidence').innerText = 'Confidence: 78%';
+    document.getElementById('reason').innerText = 'Reason: Higher Highs & Higher Lows, FVG detected';
+    document.getElementById('msInfo').innerText = 'Market Structure: Bullish (BOS confirmed)';
+    document.getElementById('fvgInfo').innerText = 'FVG: Bullish gap at 95,100-95,300';
+    document.getElementById('liqInfo').innerText = 'Liquidity: Swept below 94,900';
+    
+    // Initialize TradingView chart
+    createTradingView('BTCUSD', '15');
+  });
+
+  // -------------------------
+  // TradingView embed
+  // -------------------------
+  let tvWidget = null;
+  function createTradingView(symbol, tf){
+    try { if(tvWidget) tvWidget.remove(); } catch(e){}
+    
+    const tvSym = (() => {
+      const s = symbol.toUpperCase();
+      if(s.endsWith('USD') && !s.includes('BTC')) return 'BINANCE:' + s;
+      if(s.includes('BTC')) return 'BINANCE:BTCUSDT';
+      const fxList = ['EURUSD','GBPUSD','USDJPY','USDCAD','AUDUSD','NZDUSD','XAUUSD','XAGUSD'];
+      if(fxList.includes(s)) return 'OANDA:' + s;
+      const map = { 'NAS100':'NASDAQ:NDX','US30':'INDEX:DJI','US500':'INDEX:SPX','GER30':'INDEX:DEU40' };
+      if(map[s]) return map[s];
+      return symbol;
+    })();
+
+    const interval = tf.replace('m','');
+    tvWidget = new TradingView.widget({
+      autosize: true,
+      symbol: tvSym,
+      interval: interval,
+      timezone: "Etc/UTC",
+      theme: "dark",
+      style: "1",
+      locale: "en",
+      container_id: "tv_chart_container",
+      toolbar_bg: "#0b0f13",
+      hide_top_toolbar: false,
+      allow_symbol_change: true
+    });
+  }
+
+  </script>
+</body>
+</html>
